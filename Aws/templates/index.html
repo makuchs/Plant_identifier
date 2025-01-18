@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Identifier</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('/static/background.webp') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Wymuszenie pełnej wysokości */
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: bold;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            color: rgb(1, 78, 1);
+            text-transform: uppercase;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            visibility: hidden;
+        }
+
+        .plant-image {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f900;
+            color: #aaa;
+            font-size: 1rem;
+            overflow: hidden;
+        }
+
+        .plant-image img {
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+        }
+
+        .prediction-list {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .prediction-list li {
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 1rem;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            margin-top: auto; /* Wymuszenie, aby footer był na dole */
+        }
+
+        input[type="file"] {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #status {
+            font-size: 0.8rem;
+            color: #555;
+            display: none; /* Domyślnie ukryte */
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #status img {
+            margin-right: 10px;
+            width: 25px;
+            height: 25px;
+        }
+
+        small {
+            font-size: 0.9rem; 
+            color: #494949;       /* Przyciemniony kolor */
+            display: block;    /* Nowa linia */
+            margin-top: 5px;   /* Odstęp od formularza */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        IDENTYFIKATOR ROŚLIN
+    </header>
+
+    <main>
+        <h2>Prześlij zdjęcie rośliny:</h2>
+        <small>(Obsługiwane: stokrotka, mniszek lekarski, róża, słonecznik, tulipan)</small>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="file" name="file" accept="image/*" required>
+            <button type="submit">Identyfikuj!</button>
+        </form>
+        
+        <!-- Status Div for Loading Indicator -->
+        <div id="status">
+            <img src="/static/loading.gif" alt="Loading...">
+            <span>Przetwarzanie obrazu...</span>
+        </div>
+
+        <div id="image-container">
+            <div class="plant-image">
+                <img id="uploaded-image" src="#" alt="Uploaded image">
+            </div>
+            <ul class="prediction-list" id="prediction-list"></ul>
+        </div>
+    </main>
+
+    <footer>
+        Włodarczyk & Makuch 2025 - Cyfrowe przetwarzanie obrazu
+    </footer>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const uploadedImage = document.getElementById('uploaded-image'); // Access the <img> tag
+            const predictionList = document.getElementById('prediction-list');
+            const imageContainer = document.getElementById('image-container');
+            const statusDiv = document.getElementById('status'); // Status div for showing "loading"
+            const file = document.getElementById('file').files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Show loading status
+                statusDiv.style.display = 'flex';
+
+                try {
+                    // Show the image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImage.src = e.target.result; // Set the image source
+                        uploadedImage.style.display = 'block'; // Ensure the image is visible
+                    };
+                    reader.readAsDataURL(file);
+
+                    // Send the file to the server
+                    const response = await fetch('/predict', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Hide loading status
+                        statusDiv.style.display = 'none';
+
+                        // Display predictions
+                        predictionList.innerHTML = '';
+                        result.sorted_predictions.forEach(prediction => {
+                            const li = document.createElement('li');
+                            li.textContent = `${prediction.class}: ${prediction.confidence.toFixed(2)}%`;
+                            predictionList.appendChild(li);
+                        });
+
+                        imageContainer.style.visibility = 'visible';
+                    } else {
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    alert(`Something went wrong: ${error.message}`);
+                } finally {
+                    // Hide loading status after processing
+                    statusDiv.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
