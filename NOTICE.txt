@@ -1,6 +1,6 @@
 NOTICE
 ------
-This project includes a dataset sourced from the TensorFlow Flower Photos Dataset, available on Kaggle:
+This project includes a dataset sourced from the Flowers Dataset, available on Kaggle:
 https://www.kaggle.com/datasets/rahmasleam/flowers-dataset.
 
 The dataset is licensed under the Apache License 2.0:
