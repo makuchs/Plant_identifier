@@ -52,3 +52,9 @@ The `Model_generation` folder contains code for training and fine-tuning the dee
 - The model achieves **97.8% accuracy** on the test set.
 - Incorporates techniques like data augmentation, dropout, and early stopping to avoid overfitting.
 - Features a user-friendly interface for easy interaction with the classifier.
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).  
+The dataset is sourced from the Flowers Dataset and extended with additional images.  
+See the [NOTICE](NOTICE) file for details.
