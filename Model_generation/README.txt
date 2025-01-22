@@ -92,13 +92,13 @@ Table of Contents
 	Model performance is visualized through plots of loss, accuracy, precision, recall, and AUC metrics.
 	
 10. Acknowledgments
-	The primary dataset used in this project is sourced from the TensorFlow flower photos dataset, available on Kaggle: 
+	The primary dataset used in this project is sourced from the Flowers Dataset, available on Kaggle: 
 	https://www.kaggle.com/datasets/rahmasleam/flowers-dataset. 
 	Additionally, the dataset has been extended with free flower images collected from various sources on the internet to enhance 
 	diversity and robustness. These supplemental images were carefully selected to align with the existing categories: 
 	Daisy, Dandelion, Roses, Sunflowers, and Tulips.
 
-	Special thanks to platforms providing free-to-use images, such as Unsplash, Pexels, and Pixabay, 
+	Special thanks to platforms providing free-to-use images, such as Pexels, and Pixabay, 
 	for their contributions to the extended dataset.
 			
 	Pre-trained weights for MobileNetV2 are from the ImageNet dataset.
